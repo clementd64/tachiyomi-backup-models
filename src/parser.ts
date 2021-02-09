@@ -1,4 +1,5 @@
-import { join, Args } from "../deps.ts";
+import { join, Args } from '../deps.ts';
+import { Source, SourceEntry } from './source/source.ts';
 
 export interface Entry {
   repeated: boolean,
@@ -33,26 +34,28 @@ export abstract class Parser {
   /** Parsed definition */
   protected defs: {[key: string]: Entry[]} = {};
 
-  /** The models source directory */
-  private root = '';
+  /** Source models provider */
+  private source: Source;
 
-  constructor(root: string) {
-    this.root = root;
+  constructor(source: Source) {
+    this.source = source;
   }
 
   /** Load and parse all models */
   public async loadDefinition() {
-    for await (const entry of Deno.readDir(this.root)) {
-      await this.parseFile(join(entry.name));
+    const dir = await this.source.readDir();
+
+    for (const entry of dir) {
+      await this.parseFile(entry);
     }
   }
   
   /** Parse a model file */
-  private async parseFile(filename: string) {
-    const name = filename.replace('.kt', '');
+  private async parseFile(sourceEntry: SourceEntry) {
+    const name = sourceEntry.name.replace('.kt', '');
 
     const entries: Entry[] = [];
-    const file = await Deno.readTextFile(join(this.root, filename));
+    const file = await this.source.readFile(sourceEntry);
 
     for (let entry; (entry = Parser.regex.exec(file));) {
       const groups = entry.groups as {[key: string]: string};
