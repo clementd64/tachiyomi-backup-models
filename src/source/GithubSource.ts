@@ -20,3 +20,5 @@ export class GithubSource extends Source {
       .then(r => r.text());
   }
 }
+
+export default GithubSource;

@@ -24,3 +24,5 @@ export class LocalSource extends Source {
     return Deno.readTextFile(entry.path);
   }
 }
+
+export default LocalSource;

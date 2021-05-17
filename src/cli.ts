@@ -1,6 +1,6 @@
 import { parse } from "../deps.ts";
 import { Parser } from './parser.ts';
-import Protobuf from './protobuf.ts';
+import { Protobuf } from './protobuf.ts';
 import { Source, LocalSource, GithubSource } from './source/mod.ts';
 
 export async function main(adapter: new (root: Source) => Parser = Protobuf) {

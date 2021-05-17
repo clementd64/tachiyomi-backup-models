@@ -1,6 +1,6 @@
 import { Generator } from './generator.ts';
 
-export default class Protobuf extends Generator {
+export class Protobuf extends Generator {
   /** kotlin type mapping */
   static type = {
     'String': 'string',
@@ -29,3 +29,5 @@ export default class Protobuf extends Generator {
     return lines.join('\n');
   }
 }
+
+export default Protobuf;

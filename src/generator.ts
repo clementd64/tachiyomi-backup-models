@@ -32,3 +32,5 @@ export abstract class Generator extends Parser {
     }
   }
 }
+
+export default Generator;

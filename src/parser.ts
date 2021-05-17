@@ -81,3 +81,5 @@ export abstract class Parser {
   /** post processing function */
   public abstract process(args: Args): Promise<void> | void;
 }
+
+export default Parser;
