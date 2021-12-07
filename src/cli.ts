@@ -3,10 +3,10 @@ import { Parser } from './parser.ts';
 import { Protobuf } from './protobuf.ts';
 import { Source, LocalSource, GithubSource } from './source/mod.ts';
 
-export async function main(adapter: new (root: Source, allowInvalid: boolean) => Parser = Protobuf) {
+export async function main(adapter: new (root: Source, addInvalid: boolean) => Parser = Protobuf) {
   const args = parse(Deno.args, {
     string: [ 'ref', 'models' ],
-    boolean: [ 'allow-invalid' ],
+    boolean: [ 'add-invalid' ],
     default: {
       ref: 'master'
     }
@@ -16,7 +16,7 @@ export async function main(adapter: new (root: Source, allowInvalid: boolean) =>
     ? new LocalSource(args.models)
     : new GithubSource(args.ref);
   
-  const parser = new adapter(source, Boolean(args['allow-invalid']));
+  const parser = new adapter(source, Boolean(args['add-invalid']));
   await parser.loadDefinition();
   parser.process(args);
 }

@@ -9,8 +9,6 @@ A protobuf output is available by default, but you can build your own adapter
 deno run --allow-net --allow-write mod.ts tachiyomi.proto
 ```
 
-> The out file doesn't work with `protoc` but work with [`protobuf.js`](https://github.com/protobufjs/protobuf.js)
-
 ## Use local models
 ```sh
 git clone https://github.com/tachiyomiorg/tachiyomi.git
@@ -23,8 +21,9 @@ deno run [permission] mod.ts [options] [output-file]
 
 argument:
   output-file:            The output file (stdout if not provided or set to "-")
-  --ref <repo refs>:      Reference of teh remote repo to use (default to master)
+  --ref <repo refs>:      Reference of the remote repo to use (default to master)
   --models <models dir>:  Path to tachiyomi backup models (priority over --ref)
+  --add-invalid           Add invalid type, for backup before v0.12.2, but break protoc compatibility (default false)
 
 Permission:
   --allow-net   required to download models from github

@@ -40,11 +40,11 @@ export abstract class Parser {
   /** Source models provider */
   private source: Source;
 
-  private allowInvalid = false;
+  private addInvalid = false;
 
-  constructor(source: Source, allowInvalid = false) {
+  constructor(source: Source, addInvalid = false) {
     this.source = source;
-    this.allowInvalid = allowInvalid;
+    this.addInvalid = addInvalid;
   }
 
   /** Load and parse all models */
@@ -55,7 +55,7 @@ export abstract class Parser {
       await this.parseFile(entry);
     }
 
-    if (!this.allowInvalid) {
+    if (!this.addInvalid) {
       const invalid = Object.entries(this.defs).filter(v => v[1].some(w => w.number === 0)).map(v => v[0]);
       
       for (const name in this.defs) {
