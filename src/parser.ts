@@ -31,14 +31,20 @@ export abstract class Parser {
    */
   static regex = /^\s*(?!\/\/\s*)@ProtoNumber\((?<number>\d+)\)\s+va[rl]\s+(?<name>\w+):\s+(?:(?:List<(?<list>\w+)>)|(?<type>\w+))(?<optional>\?|(:?\s+=))?/gm;
 
+  /** Definition regex. Match class and properties */
+  static defsRegex = /class (?<name>\w+)\((?<defs>(?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gm;
+
   /** Parsed definition */
   protected defs: {[key: string]: Entry[]} = {};
 
   /** Source models provider */
   private source: Source;
 
-  constructor(source: Source) {
+  private allowInvalid = false;
+
+  constructor(source: Source, allowInvalid = false) {
     this.source = source;
+    this.allowInvalid = allowInvalid;
   }
 
   /** Load and parse all models */
@@ -48,33 +54,46 @@ export abstract class Parser {
     for (const entry of dir) {
       await this.parseFile(entry);
     }
+
+    if (!this.allowInvalid) {
+      const invalid = Object.entries(this.defs).filter(v => v[1].some(w => w.number === 0)).map(v => v[0]);
+      
+      for (const name in this.defs) {
+        if (invalid.includes(name)) {
+          delete this.defs[name];
+        } else {
+          this.defs[name] = this.defs[name].filter(v => !invalid.includes(v.type));
+        }
+      }
+    }
   }
   
   /** Parse a model file */
   private async parseFile(sourceEntry: SourceEntry) {
-    const name = sourceEntry.name.replace('.kt', '');
-
-    const entries: Entry[] = [];
     const file = await this.source.readFile(sourceEntry);
 
-    for (let entry; (entry = Parser.regex.exec(file));) {
-      const groups = entry.groups as {[key: string]: string};
-      entries.push({
-        repeated: Boolean(groups.list),
-        required: !groups.optional,
-        number: Number(groups.number),
-        type: groups.list ? groups.list : groups.type,
-        name: groups.name,
-        match: entry[0],
-      });
-    }
+    for (let defs; (defs = Parser.defsRegex.exec(file)?.groups as {name: string, defs: string});) {
+      const entries: Entry[] = [];
 
-    if (entries.length !== (file.match(/^\s*(?!\/\/\s*)@ProtoNumber/gm)?.length ?? 0)) {
-      throw new Error(`Not all @ProtoNumber matched in ${name}\n  matched: ${entries.map(v => v.name).join(', ')}`);
-    }
-
-    if (entries.length) {
-      this.defs[name] = entries;
+      for (let entry; (entry = Parser.regex.exec(defs.defs));) {
+        const groups = entry.groups as {[key: string]: string};
+        entries.push({
+          repeated: Boolean(groups.list),
+          required: !groups.optional,
+          number: Number(groups.number),
+          type: groups.list ? groups.list : groups.type,
+          name: groups.name,
+          match: entry[0],
+        });
+      }
+  
+      if (entries.length !== (defs.defs.match(/^\s*(?!\/\/\s*)@ProtoNumber/gm)?.length ?? 0)) {
+        throw new Error(`Not all @ProtoNumber matched in ${defs.name}\n  matched: ${entries.map(v => v.name).join(', ')}`);
+      }
+  
+      if (entries.length) {
+        this.defs[defs.name] = entries;
+      }
     }
   }
 
