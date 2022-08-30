@@ -8,7 +8,7 @@ interface FileEntry extends SourceEntry {
 
 export class GithubSource extends Source {
   readDir(): Promise<FileEntry[]> {
-    const url = new URL('https://api.github.com/repos/tachiyomiorg/tachiyomi/contents/app/src/main/java/eu/kanade/tachiyomi/data/backup/full/models');
+    const url = new URL('https://api.github.com/repos/tachiyomiorg/tachiyomi/contents/app/src/main/java/eu/kanade/tachiyomi/data/backup/models');
     url.searchParams.append('ref', this.config || 'master');
     return fetch(url)
       .then(r => r.json() as Promise<FileEntry[]>)
