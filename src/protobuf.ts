@@ -8,6 +8,9 @@ export class Protobuf extends Generator {
     'Long': 'int64',
     'Boolean': 'bool',
     'Float': 'float',
+    // TODO: better handling of enum,
+    // this should be auto discovered
+    'UpdateStrategy': 'int32',
   };
 
   /** Build schema from parsed definition */
