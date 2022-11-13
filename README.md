@@ -12,7 +12,7 @@ deno run --allow-net --allow-write mod.ts tachiyomi.proto
 ## Use local models
 ```sh
 git clone https://github.com/tachiyomiorg/tachiyomi.git
-deno run --allow-read --allow-write mod.ts tachiyomi.proto --models ./tachiyomi/app/src/main/java/eu/kanade/tachiyomi/data/backup/full/models/
+deno run --allow-read --allow-write mod.ts tachiyomi.proto --models ./tachiyomi/app/src/main/java/eu/kanade/tachiyomi/data/backup/models/
 ```
 
 ## Usage
